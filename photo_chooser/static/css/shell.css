@@ -1,0 +1,78 @@
+/* ══════════════════════════════════════════════════════
+   Photo Studio – shell (app bar, tabs, hub)
+   Loaded last: adapts the modules to live under the app bar.
+══════════════════════════════════════════════════════ */
+:root { --appbar-h: 44px; }
+body { display: flex; flex-direction: column; height: 100vh; }
+
+#appbar {
+  height: var(--appbar-h); flex-shrink: 0; display: flex; align-items: center; gap: 28px;
+  padding: 0 18px; background: #0b0d12; border-bottom: 1px solid var(--border);
+}
+.ab-brand { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 15px; letter-spacing: .4px; cursor: pointer; }
+.ab-tabs { display: flex; gap: 2px; height: 100%; }
+.ab-tabs button {
+  background: none; border: none; color: var(--text-muted); padding: 0 16px; cursor: pointer;
+  font-size: 13px; font-weight: 600; border-bottom: 2px solid transparent; height: 100%;
+}
+.ab-tabs button:hover:not(:disabled) { color: var(--text); }
+.ab-tabs button.active { color: var(--accent-h); border-bottom-color: var(--accent); }
+.ab-tabs button:disabled { opacity: .35; cursor: default; }
+
+.app { display: none; flex: 1; min-height: 0; min-width: 0; }
+.app.active { display: flex; }
+
+/* PhotoChooser now lives inside its tab instead of the whole window */
+#app-chooser #sidebar, #app-chooser #main { height: 100%; }
+#app-chooser .project-list { max-height: calc(100vh - 374px); }
+
+/* hub */
+#app-hub { overflow-y: auto; }
+.hub-wrap { margin: auto; padding: 40px; max-width: 1080px; text-align: center; }
+.hub-wrap h1 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+.hub-sub { color: var(--text-muted); margin-bottom: 38px; font-size: 14px; }
+.hub-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.hub-card {
+  position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 34px 24px 26px; color: var(--text); cursor: pointer; display: flex; flex-direction: column;
+  align-items: center; gap: 12px; font: inherit; transition: transform .15s, border-color .15s, box-shadow .15s;
+}
+.hub-card:hover:not(:disabled) { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 10px 30px #0008; }
+.hub-card.soon { opacity: .45; cursor: default; }
+.hub-step {
+  position: absolute; top: 14px; left: 16px; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--surface3); color: var(--text-muted); font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.hub-ico { font-size: 44px; line-height: 1; }
+.hub-title { font-size: 18px; font-weight: 700; }
+.hub-desc { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+.hub-meta { font-size: 12px; color: var(--accent-h); margin-top: 4px; min-height: 16px; }
+@media (max-width: 900px) { .hub-grid { grid-template-columns: 1fr; } }
+
+.ab-quit {
+  margin-left: auto; background: none; border: 1px solid var(--border); color: var(--text-muted);
+  border-radius: 99px; padding: 5px 14px; font-size: 12px; cursor: pointer;
+}
+.ab-quit:hover { border-color: var(--danger); color: var(--danger); }
+.ab-logo { width: 26px; height: 26px; display: block; }
+
+/* updates & settings */
+.ab-set { background: none; border: 1px solid var(--border); color: var(--text-muted); border-radius: 99px; padding: 5px 12px; font-size: 12px; cursor: pointer; margin-left: auto; }
+.ab-set:hover { color: var(--text); border-color: var(--accent); }
+.ab-set + .ab-quit { margin-left: 8px; }
+.ab-set.dot::after { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-left: 6px; vertical-align: 1px; }
+.up-box { width: 560px; max-width: 92vw; }
+.up-sub { color: var(--text-muted); font-size: 13px; margin: -6px 0 14px; }
+.up-sub a { color: var(--accent-h); }
+.up-notes { max-height: 46vh; overflow-y: auto; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-size: 13px; line-height: 1.6; margin-bottom: 16px; }
+.up-notes h3 { font-size: 13px; margin: 10px 0 4px; color: var(--accent-h); }
+.up-notes h3:first-child { margin-top: 0; }
+.up-notes ul { margin: 0 0 6px 18px; }
+.up-notes p { margin: 4px 0; }
+.set-row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.set-row > div:first-child { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; font-size: 13px; }
+.set-row span { color: var(--text-muted); font-size: 12px; word-break: break-all; }
+.set-btns { display: flex; gap: 6px; }
+.hub-import { margin: -18px auto 30px; max-width: 640px; background: var(--surface); border: 1px solid var(--accent); border-radius: 10px; padding: 12px 16px; font-size: 13px; display: flex; align-items: center; gap: 12px; text-align: left; }
+.hub-import span { flex: 1; }

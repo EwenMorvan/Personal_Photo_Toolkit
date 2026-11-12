@@ -1,0 +1,412 @@
+<!-- PhotoChooser module: sort, like, retouch -->
+<div id="app-chooser" class="app">
+<!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+<aside id="sidebar">
+  <div class="sidebar-logo" id="logo-home" title="Tous les projets">
+    <span class="logo-icon">⬡</span>
+    <span class="logo-text">PhotoChooser</span>
+  </div>
+
+  <div class="sidebar-section">
+    <button class="btn btn-primary w-full" id="btn-new-project">+ Nouveau projet</button>
+    <input type="search" id="proj-search" class="filter-input w-full mt-2" placeholder="Rechercher un projet…"/>
+    <select id="proj-sort" class="filter-input w-full mt-2" title="Trier les projets">
+      <option value="recent">Photos les plus récentes</option>
+      <option value="old">Photos les plus anciennes</option>
+      <option value="name">Nom (A → Z)</option>
+    </select>
+    <ul id="project-list" class="project-list mt-2"></ul>
+  </div>
+
+  <div class="sidebar-section" id="ai-badge-wrap" style="display:none">
+    <div class="ai-badge" id="ai-badge">
+      <span class="ai-dot"></span>
+      <span id="ai-label">IA prête</span>
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="liked-count-wrap" id="liked-count-wrap" style="display:none">
+      <span class="heart-icon">♥</span>
+      <span id="liked-count">0</span> photo(s) aimée(s)
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════ MAIN ══════════════════════════════ -->
+<main id="main">
+
+  <!-- ── Home : all projects ── -->
+  <section id="view-home" class="view active">
+    <div class="home-wrap">
+      <div class="home-head">
+        <h1>Mes projets</h1>
+        <span class="badge" id="home-count"></span>
+      </div>
+      <div class="home-grid" id="home-grid"></div>
+      <div class="welcome-center" id="home-empty" style="display:none">
+        <div class="welcome-icon">⬡</div>
+        <h1>Bienvenue sur PhotoChooser</h1>
+        <p>Créez un projet pour commencer à trier vos photos.</p>
+        <button class="btn btn-primary" id="btn-welcome-new">Créer un projet</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Project view ── -->
+  <section id="view-project" class="view">
+
+    <!-- Top bar : the project and what you can do with it -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="btn btn-ghost" id="btn-home" title="Tous les projets">←</button>
+        <h2 id="project-title">Projet</h2>
+        <span id="photo-count-badge" class="badge">0 photos</span>
+      </div>
+      <div class="topbar-actions">
+        <div class="menu" id="add-menu">
+          <button class="btn btn-primary" id="btn-add">+ Ajouter des photos</button>
+          <div class="menu-pop">
+            <button id="btn-add-folder">📁 Un dossier entier</button>
+            <button id="btn-add-files">🖼 Des fichiers</button>
+            <button id="btn-add-phone">📱 Depuis le téléphone</button>
+          </div>
+        </div>
+        <button class="btn btn-outline" id="btn-enhance-liked" title="Amélioration automatique de toutes les photos likées pas encore retouchées">✦ Améliorer les likées</button>
+        <button class="btn btn-outline" id="btn-make-album" title="Créer un album à partir des photos likées de ce projet">📖 Créer un album</button>
+        <button class="btn btn-outline" id="btn-open-sorted" title="Ouvrir le dossier où sont copiées les photos likées">📂 Dossier trié</button>
+        <button class="btn btn-outline" id="btn-classify" title="Classification IA" style="display:none">🤖 Classer</button>
+      </div>
+    </header>
+
+    <!-- Filters : what is shown in the grid -->
+    <div class="filters-bar" id="filters-bar">
+      <div class="seg" id="seg-liked">
+        <button data-v="all" class="active">Toutes</button>
+        <button data-v="liked">♥ Likées</button>
+      </div>
+      <div class="seg" id="seg-media">
+        <button data-v="" class="active">Tout</button>
+        <button data-v="photo">Photos</button>
+        <button data-v="video">Vidéos</button>
+      </div>
+      <div class="filter-group" title="Période">
+        <input type="date" id="filter-date-from" class="filter-input" title="À partir du"/>
+        <span class="filter-sep">→</span>
+        <input type="date" id="filter-date-to" class="filter-input" title="Jusqu'au"/>
+      </div>
+      <div class="filter-group" id="filter-category-wrap" style="display:none">
+        <select id="filter-category" class="filter-input" title="Catégorie">
+          <option value="">Toutes catégories</option>
+          <option value="landscape">Paysage</option>
+          <option value="sea">Mer</option>
+          <option value="mountain">Montagne</option>
+          <option value="person">Personne</option>
+          <option value="city">Ville</option>
+          <option value="forest">Forêt</option>
+          <option value="snow">Neige</option>
+          <option value="sunset">Coucher de soleil</option>
+          <option value="indoor">Intérieur</option>
+          <option value="food">Nourriture</option>
+          <option value="animal">Animal</option>
+          <option value="architecture">Architecture</option>
+        </select>
+      </div>
+      <label class="chip" title="Uniquement les photos géolocalisées"><input type="checkbox" id="filter-gps"/><span>📍 GPS</span></label>
+      <button class="btn btn-ghost" id="btn-reset-filters" style="display:none">✕ Effacer les filtres</button>
+      <select id="filter-media" hidden><option value=""></option><option value="photo"></option><option value="video"></option></select>
+    </div>
+
+    <!-- Selection bar -->
+    <div class="selection-bar" id="selection-bar" style="display:none">
+      <span class="sel-count"><b id="sel-count">0</b> sélectionné(s)</span>
+      <button class="btn btn-ghost" id="sel-all" title="Ctrl+A">Tout</button>
+      <span class="sel-sep"></span>
+      <button class="btn btn-outline" id="sel-like">♥ Liker</button>
+      <button class="btn btn-outline" id="sel-auto" title="Balance automatique des couleurs">✦ Auto couleur</button>
+      <button class="btn btn-outline" id="sel-paste" title="Coller l'étalonnage copié">⎘ Coller l'étalonnage</button>
+      <button class="btn btn-outline" id="sel-reset-grade">↺ Réinit. étalonnage</button>
+      <span class="sel-sep"></span>
+      <button class="btn btn-danger" id="sel-remove" title="Retirer du projet (Suppr) – les fichiers restent sur le disque">🗑 Retirer du projet</button>
+      <button class="btn btn-ghost" id="sel-clear" title="Échap">✕</button>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid-wrap">
+      <div id="photo-grid" class="photo-grid"></div>
+      <div id="grid-empty" class="grid-empty" style="display:none">
+        <div class="empty-icon">📂</div>
+        <p>Ajoutez des photos pour commencer</p>
+      </div>
+      <div id="grid-loading" class="grid-loading" style="display:none">
+        <div class="spinner"></div>
+        <p>Chargement…</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════ MODAL – New Project ════════════════ -->
+<div id="modal-new-project" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <h2>Nouveau projet</h2>
+    <input type="text" id="new-project-name" class="modal-input" placeholder="Nom du projet…" autocomplete="off"/>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="btn-cancel-project">Annuler</button>
+      <button class="btn btn-primary" id="btn-confirm-project">Créer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MODAL – Import from phone ═══════════ -->
+<div id="modal-phone" class="modal-overlay" style="display:none">
+  <div class="modal-box phone-box">
+    <div class="phone-head">
+      <div class="phone-icon" id="phone-icon">📱</div>
+      <div>
+        <h2>Importer depuis le téléphone</h2>
+        <div class="phone-sub" id="phone-sub">Application Photo Finder</div>
+      </div>
+    </div>
+    <div class="phone-status" id="phone-status">Préparation…</div>
+    <div class="phone-hint" id="phone-hint"></div>
+    <div class="phone-list" id="phone-list" style="display:none"></div>
+    <div class="phone-bar" id="phone-bar" style="display:none"><div id="phone-bar-fill"></div></div>
+    <div class="phone-stats" id="phone-stats"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="btn-phone-cancel">Annuler</button>
+      <button class="btn btn-primary" id="btn-phone-close" style="display:none">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MODAL – Lightbox ════════════════════ -->
+<div id="lightbox" class="lightbox" style="display:none" role="dialog" aria-modal="true">
+  <div class="lb-tools">
+    <span class="lb-zoom" id="lb-zoom" title="Molette : zoom · double-clic : 100 % · 0 : ajuster">Ajusté</span>
+    <button class="lb-tool" id="lb-external" title="Ouvrir avec l'application par défaut" style="display:none">↗ Lecteur externe</button>
+    <button class="lb-close" id="lb-close" title="Fermer (Échap)">✕</button>
+  </div>
+
+  <button class="lb-arrow lb-prev" id="lb-prev" title="Précédent (←)">&#8249;</button>
+  <button class="lb-arrow lb-next" id="lb-next" title="Suivant (→)">&#8250;</button>
+
+  <div class="lb-img-wrap">
+    <div class="lb-stage" id="lb-stage">
+      <img id="lb-img" src="" alt="" draggable="false"/>
+    </div>
+    <video id="lb-video" class="lb-video" controls playsinline style="display:none"></video>
+    <div class="lb-video-error" id="lb-video-error" style="display:none">
+      <p>Ce format vidéo ne peut pas être lu dans le navigateur.</p>
+      <button class="btn btn-outline" id="lb-video-external">↗ Ouvrir dans le lecteur</button>
+    </div>
+    <div class="lb-spinner" id="lb-spinner"></div>
+  </div>
+
+  <div class="lb-footer">
+    <div class="lb-meta">
+      <span id="lb-filename" class="lb-filename"></span>
+      <span id="lb-date" class="lb-date"></span>
+      <a id="lb-location" class="lb-location" href="#" target="_blank" style="text-decoration:none"></a>
+      <span id="lb-category" class="lb-category"></span>
+      <span id="lb-edited" class="lb-edited" style="display:none">🎨 Modifiée</span>
+    </div>
+    <div class="lb-counter" id="lb-counter">1 / 1</div>
+    <button class="lb-action" id="lb-edit" title="Couleurs, lumière, zones (E)">🎨 Retoucher</button>
+    <button class="lb-action" id="lb-crop" title="Recadrer, tourner, redresser (C)">✂ Recadrer</button>
+    <button class="lb-like-btn" id="lb-like-btn" title="Liker (L)">
+      <span class="lb-heart">♥</span>
+      <span id="lb-like-label">Liker</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ COLOR PAGE (editor) ═════════════════ -->
+<div id="editor" class="editor" style="display:none">
+  <header class="ed-top">
+    <div class="ed-top-group">
+      <button class="ed-btn ed-icon" id="ed-prev" title="Photo précédente (←)">‹</button>
+      <button class="ed-btn ed-icon" id="ed-next" title="Photo suivante (→)">›</button>
+      <span class="ed-task" id="ed-task">Retouche</span>
+      <span class="ed-filename" id="ed-filename"></span>
+    </div>
+    <div class="mode-switch" id="mode-switch" title="Simple : l'essentiel, guidé par l'IA · Pro : tous les réglages">
+      <button data-mode="simple">Simple</button>
+      <button data-mode="pro">Pro</button>
+    </div>
+    <div class="ed-top-group">
+      <button class="ed-btn ed-icon" id="ed-undo" title="Annuler (Ctrl+Z)">↶</button>
+      <button class="ed-btn ed-icon" id="ed-redo" title="Rétablir (Ctrl+Y)">↷</button>
+      <button class="ed-btn ed-danger" id="ed-reset" title="Revenir à la photo d'origine">↺ Réinitialiser</button>
+      <span class="ed-sep"></span>
+      <button class="ed-btn ed-toggle" id="ed-bypass" title="Voir l'original (B)">Avant</button>
+      <button class="ed-btn ed-toggle" id="ed-split" title="Volet avant / après (W)">◧ Volet</button>
+      <button class="ed-btn" id="ed-full" title="Plein écran (F)">⛶ Plein écran</button>
+      <span class="ed-zoom" id="ed-zoom" title="Molette : zoom · double-clic : 100 % · 0 : ajuster">Ajusté</span>
+      <span class="ed-sep grade-only"></span>
+      <button class="ed-btn ed-accent" id="ed-auto" title="Amélioration automatique (A)">✦ Auto</button>
+      <button class="ed-btn" id="ed-copy" title="Copier l'étalonnage (Ctrl+C)">Copier</button>
+      <button class="ed-btn" id="ed-paste" title="Coller l'étalonnage (Ctrl+V)">Coller</button>
+      <span class="ed-sep"></span>
+      <span class="ed-save" id="ed-save"></span>
+      <button class="ed-btn ed-done" id="ed-close" title="Enregistrer et fermer (Échap)">✓ Terminer</button>
+    </div>
+  </header>
+
+  <div class="ed-body">
+    <div class="ed-viewer" id="ed-viewer">
+      <div class="ed-stage" id="ed-stage">
+        <div class="ed-content" id="ed-content"><canvas id="ed-canvas"></canvas></div>
+        <div class="ed-overlay" id="ed-overlay">
+          <div class="ed-wipe" id="ed-wipe" data-nopan style="display:none"><span class="wl">Avant</span><span class="wr">Après</span></div>
+          <div class="ed-scan" id="ed-scan" style="display:none"></div>
+          <div class="brush-cursor" id="brush-cursor" style="display:none"></div>
+          <div class="crop-box" id="crop-box" data-nopan style="display:none">
+            <div class="crop-grid"></div>
+            <i data-h="nw"></i><i data-h="n"></i><i data-h="ne"></i><i data-h="e"></i>
+            <i data-h="se"></i><i data-h="s"></i><i data-h="sw"></i><i data-h="w"></i>
+          </div>
+        </div>
+      </div>
+      <div class="ed-caption" id="ed-caption" style="display:none"></div>
+      <div class="ed-loading" id="ed-loading"><div class="spinner"></div></div>
+    </div>
+    <aside class="ed-scopes">
+      <div class="ed-tabs small" id="scope-tabs">
+        <button data-scope="waveform" class="active">Waveform</button>
+        <button data-scope="parade">Parade</button>
+        <button data-scope="vector">Vecteurs</button>
+        <button data-scope="histogram">Histo</button>
+      </div>
+      <canvas id="scope-canvas" class="scope-canvas"></canvas>
+    </aside>
+  </div>
+
+  <div class="ed-panel">
+    <nav class="ed-tabs" id="ed-tabs">
+      <button data-tab="primaries" class="active">Primaires</button>
+      <button data-tab="curves">Courbes</button>
+      <button data-tab="masks">Zones (IA)</button>
+      <button data-tab="looks">Looks &amp; LUT</button>
+    </nav>
+
+    <section class="ed-section" data-tab="simple">
+      <div class="simple-wrap">
+        <div class="simple-col simple-main">
+          <button class="simple-auto" id="s-auto">✦ Améliorer automatiquement</button>
+          <div class="s-slider s-intensity" id="s-int" title="Dose toute l'amélioration : 0 % = photo d'origine, 100 % = réglage conseillé">
+            <label>Intensité</label><input type="range" id="s-int-range" min="0" max="150" step="1" value="100"/><output id="s-int-out">–</output>
+          </div>
+          <p class="ed-hint" id="s-info">L'IA analyse la photo (ciel, personnes, relief…) et règle lumière, couleurs, courbes et zones. Ajustez ensuite avec les curseurs.</p>
+          <p class="ed-hint" id="s-learn"></p>
+          <div class="aspect-btns">
+            <button class="ed-btn" id="s-before" title="Maintenir pour voir la photo d'origine (B)">👁 Voir l'original</button>
+          </div>
+        </div>
+        <div class="simple-col simple-fine">
+          <button class="ed-btn s-more" id="s-more"></button>
+          <div class="simple-sliders" id="s-sliders"></div>
+          <p class="ed-hint s-fine-hint">Rien d'obligatoire ici : le bouton et le curseur « Intensité » suffisent. Ces réglages servent seulement à retoucher un détail (trop sombre, pas assez de couleurs…).</p>
+        </div>
+        <div class="simple-col simple-styles">
+          <div class="section-label">Ambiances <span class="ed-hint">facultatif · recliquer pour retirer</span></div>
+          <p class="ed-hint">Une ambiance est une recette fixe (la même pour toutes les photos) posée par-dessus la correction automatique.</p>
+          <div class="looks-grid" id="simple-looks"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ed-section active" data-tab="primaries">
+      <div class="prim-row" id="prim-top"></div>
+      <div class="wheels" id="wheels"></div>
+      <div class="prim-row" id="prim-bottom"></div>
+    </section>
+
+    <section class="ed-section" data-tab="curves">
+      <div class="curves-wrap">
+        <div class="curves-side">
+          <div class="curve-channels" id="curve-channels">
+            <button data-ch="y" class="active">Y</button>
+            <button data-ch="r" class="ch-r">R</button>
+            <button data-ch="g" class="ch-g">G</button>
+            <button data-ch="b" class="ch-b">B</button>
+          </div>
+          <button class="ed-btn" id="curve-reset-ch">↺ Canal</button>
+          <button class="ed-btn" id="curve-reset-all">↺ Toutes</button>
+          <p class="ed-hint">Clic : ajouter un point<br/>Glisser : déplacer<br/>Double-clic ou clic droit : supprimer</p>
+        </div>
+        <canvas id="curve-canvas" class="curve-canvas"></canvas>
+      </div>
+    </section>
+
+    <section class="ed-section" data-tab="masks">
+      <div class="masks-wrap">
+        <div class="masks-col masks-list">
+          <div class="section-label">Zones de retouche</div>
+          <div id="layer-list" class="layer-list"></div>
+          <select id="mask-add" class="filter-input"></select>
+          <div id="ai-box" class="ai-box"></div>
+        </div>
+        <div class="masks-col masks-adj">
+          <div class="section-label">Réglages de la zone <span id="layer-name"></span></div>
+          <div class="prim-row left" id="layer-adj"></div>
+          <p class="ed-hint" id="layer-hint">Ajoutez une zone détectée (ciel, personnes…) ou une zone libre au pinceau, puis réglez-la ici. Les réglages ne s'appliquent que dans la zone.</p>
+        </div>
+        <div class="masks-col masks-brush">
+          <div class="section-label">Pinceau</div>
+          <div class="aspect-btns">
+            <button class="ed-btn ed-toggle" id="brush-add" title="Peindre : ajouter à la zone">🖌 Peindre</button>
+            <button class="ed-btn ed-toggle" id="brush-erase" title="Gommer : retirer de la zone">◌ Gommer</button>
+          </div>
+          <div class="prim-row left" id="brush-params"></div>
+          <div class="aspect-btns">
+            <button class="ed-btn ed-toggle" id="mask-show" title="Afficher la zone en rouge (O)">👁 Voir la zone</button>
+            <button class="ed-btn ed-toggle" id="mask-invert" title="Inverser la zone détectée">Inverser</button>
+            <button class="ed-btn" id="paint-clear" title="Effacer toute la peinture de cette zone">Effacer le pinceau</button>
+          </div>
+          <p class="ed-hint">Le pinceau complète ou corrige une zone détectée. Molette : zoom · clic milieu ou Espace + glisser : déplacer · <code>[</code> <code>]</code> : taille.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="ed-section" data-tab="looks">
+      <div class="looks-wrap">
+        <div class="looks-grid" id="looks-grid"></div>
+        <div class="lut-box">
+          <div class="section-label">LUT 3D (.cube)</div>
+          <select id="lut-select" class="filter-input"></select>
+          <div id="lut-mix"></div>
+          <button class="ed-btn" id="lut-import">+ Importer des LUT…</button>
+          <p class="ed-hint">Les LUT importées sont copiées dans le dossier <code>luts</code> de l'application.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="ed-section" data-tab="crop">
+      <div class="crop-panel">
+        <div class="crop-group">
+          <div class="section-label">Format</div>
+          <div class="aspect-btns" id="aspect-btns"></div>
+        </div>
+        <div class="crop-group">
+          <div class="section-label">Rotation</div>
+          <div class="aspect-btns">
+            <button class="ed-btn" id="rot-left" title="Rotation 90° anti-horaire">⟲ 90°</button>
+            <button class="ed-btn" id="rot-right" title="Rotation 90° horaire">⟳ 90°</button>
+            <button class="ed-btn" id="flip-h" title="Miroir horizontal">⇋ Miroir</button>
+          </div>
+        </div>
+        <div class="crop-group grow">
+          <div class="section-label">Redresser <span id="angle-val">0.0°</span></div>
+          <input type="range" id="angle-range" min="-45" max="45" step="0.1" value="0"/>
+        </div>
+        <div class="crop-group">
+          <div class="section-label">&nbsp;</div>
+          <button class="ed-btn" id="crop-reset">↺ Réinit. recadrage</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+</div>

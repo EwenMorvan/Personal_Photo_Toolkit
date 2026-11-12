@@ -1,0 +1,147 @@
+<!-- Montage module: photo / video slideshow editor -->
+<div id="app-montage" class="app">
+
+  <!-- ── all montages ── -->
+  <section id="mo-home" class="al-view active">
+    <div class="home-wrap">
+      <div class="home-head">
+        <h1>Mes montages</h1>
+        <span class="badge" id="mo-count"></span>
+        <button class="btn btn-primary" id="mo-new" style="margin-left:auto">+ Nouveau montage</button>
+      </div>
+      <div class="home-grid" id="mo-grid"></div>
+      <div class="welcome-center" id="mo-empty" style="display:none">
+        <div class="welcome-icon">🎬</div>
+        <h1>Créez votre premier montage</h1>
+        <p>Choisissez un projet PhotoChooser : le film se monte tout seul à partir de vos photos et vidéos likées, puis vous ajustez ce que vous voulez.</p>
+        <button class="btn btn-primary" id="mo-new2">+ Nouveau montage</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── editor ── -->
+  <section id="mo-editor" class="al-view">
+    <header class="al-top">
+      <button class="btn btn-ghost" id="mo-back" title="Tous les montages">←</button>
+      <input id="mo-name" class="al-name" spellcheck="false" title="Nom du montage"/>
+      <span class="al-save" id="mo-save"></span>
+      <div class="al-top-actions">
+        <select id="mo-format" class="filter-input" title="Format de la vidéo"></select>
+        <button class="btn btn-ghost" id="mo-undo" title="Annuler (Ctrl+Z)">↶</button>
+        <button class="btn btn-ghost" id="mo-redo" title="Rétablir (Ctrl+Y)">↷</button>
+        <button class="btn btn-outline" id="mo-regen" title="Refaire tout le montage automatiquement">✦ Montage automatique</button>
+        <button class="btn btn-primary" id="mo-export">⬇ Exporter la vidéo</button>
+      </div>
+    </header>
+
+    <div class="mo-body">
+      <div class="mo-center">
+        <div class="mo-stage" id="mo-stage"><canvas id="mo-canvas"></canvas></div>
+        <div class="mo-transport">
+          <button class="btn btn-ghost" id="mo-first" title="Début (Origine)">⏮</button>
+          <button class="btn btn-ghost" id="mo-prev" title="Clip précédent (←)">◀</button>
+          <button class="btn btn-primary mo-play" id="mo-play" title="Lecture / pause (Espace)">▶</button>
+          <button class="btn btn-ghost" id="mo-next" title="Clip suivant (→)">▶▶</button>
+          <span class="mo-time" id="mo-time">0:00 / 0:00</span>
+          <button class="btn btn-ghost" id="mo-full" title="Plein écran (F)">⛶</button>
+        </div>
+      </div>
+      <aside class="al-side mo-side" id="mo-props"></aside>
+    </div>
+
+    <div class="mo-timeline">
+      <div class="mo-tl-head">
+        <button class="btn btn-outline" id="mo-add-title" title="Ajouter un carton de titre">T Titre</button>
+        <button class="btn btn-outline" id="mo-split" title="Couper le clip à la tête de lecture (S)">✂ Couper</button>
+        <button class="btn btn-outline" id="mo-dup" title="Dupliquer le clip (Ctrl+D)">⧉ Dupliquer</button>
+        <button class="btn btn-danger" id="mo-del" title="Supprimer le clip (Suppr)">🗑</button>
+        <span class="sel-sep"></span>
+        <button class="btn btn-outline" id="mo-music-btn">🎵 Musique…</button>
+        <input type="file" id="mo-music-file" accept="audio/*,.mp3,.m4a,.wav,.ogg,.flac" hidden/>
+        <span class="al-hint" id="mo-tl-info"></span>
+        <label class="mo-zoom" title="Zoom de la timeline">🔍 <input type="range" id="mo-zoom" min="12" max="160" step="1" value="46"/></label>
+      </div>
+      <div class="mo-tl-scroll" id="mo-tl-scroll">
+        <div class="mo-tl" id="mo-tl">
+          <div class="mo-ruler" id="mo-ruler"></div>
+          <div class="mo-track" id="mo-track"></div>
+          <div class="mo-audio" id="mo-audio"></div>
+          <div class="mo-head" id="mo-head"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="al-tray mo-tray">
+      <div class="al-tray-head">
+        <div class="seg" id="mo-tray-seg">
+          <button data-v="unused" class="active">Pas encore utilisées</button>
+          <button data-v="liked">Toutes les likées</button>
+          <button data-v="all">Tout le projet</button>
+        </div>
+        <span class="al-hint" id="mo-tray-info"></span>
+      </div>
+      <div class="al-tray-list" id="mo-tray-list"></div>
+    </div>
+  </section>
+
+  <!-- ── new montage / automatic dialog ── -->
+  <div class="modal-overlay" id="mo-dialog" style="display:none">
+    <div class="modal-box al-dialog">
+      <h2 id="mo-dlg-title">Nouveau montage</h2>
+      <div class="al-form" id="mo-form">
+        <label>Projet<select id="mo-f-project" class="filter-input"></select></label>
+        <label>Nom du montage<input id="mo-f-name" class="modal-input" autocomplete="off"/></label>
+        <label>Format<select id="mo-f-format" class="filter-input"></select></label>
+        <label>Style du montage automatique
+          <select id="mo-f-style" class="filter-input">
+            <option value="voyage">Carnet de voyage — un titre par jour, rythme posé</option>
+            <option value="doux">Doux — fondus lents, mouvement léger</option>
+            <option value="dynamique">Dynamique — plans courts, coupes franches</option>
+            <option value="cinema">Cinéma — bandes noires, plans longs, fondus au noir</option>
+            <option value="vide">Aucun : je monte tout à la main</option>
+          </select></label>
+        <label>Durée visée
+          <select id="mo-f-length" class="filter-input">
+            <option value="0">Toutes les photos (durée libre)</option>
+            <option value="30">Environ 30 secondes</option>
+            <option value="60" selected>Environ 1 minute</option>
+            <option value="120">Environ 2 minutes</option>
+            <option value="240">Environ 4 minutes</option>
+          </select></label>
+        <label>Photos et vidéos à utiliser
+          <select id="mo-f-source" class="filter-input">
+            <option value="liked">Celles que j'ai likées (recommandé)</option>
+            <option value="all">Tout le projet</option>
+          </select></label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="mo-dlg-cancel">Annuler</button>
+        <button class="btn btn-primary" id="mo-dlg-ok">✦ Créer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── export ── -->
+  <div class="modal-overlay" id="mo-export-dlg" style="display:none">
+    <div class="modal-box al-dialog">
+      <h2>Exporter la vidéo</h2>
+      <div id="mo-ex-form">
+        <div class="al-form">
+          <label>Qualité
+            <select id="mo-ex-quality" class="filter-input">
+              <option value="1">Full HD (1080p) — recommandé</option>
+              <option value="0.6667">HD (720p) — plus rapide, fichier plus léger</option>
+              <option value="2">4K (2160p) — long à créer</option>
+            </select></label>
+        </div>
+        <p class="al-hint" id="mo-ex-info"></p>
+        <div class="modal-actions"><button class="btn btn-ghost" id="mo-ex-close">Fermer</button><button class="btn btn-primary" id="mo-ex-go">⬇ Créer le fichier MP4</button></div>
+      </div>
+      <div class="al-progress" id="mo-ex-progress" style="display:none">
+        <p id="mo-ex-text">Préparation…</p>
+        <progress id="mo-ex-bar" max="100" value="0"></progress>
+        <div class="modal-actions"><button class="btn btn-ghost" id="mo-ex-cancel">Annuler</button></div>
+      </div>
+    </div>
+  </div>
+</div>

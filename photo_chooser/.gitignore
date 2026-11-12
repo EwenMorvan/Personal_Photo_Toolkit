@@ -1,0 +1,23 @@
+# Environnement et build
+.venv/
+__pycache__/
+*.pyc
+build/
+dist/
+
+# Données de l'utilisateur (générées par l'app)
+projects/
+albums/
+montages/
+paint/
+luts/
+thumbnails_cache/
+maps_cache/
+*.log
+
+photo_studio.log
+.venv*/
+
+# Médias lourds et sauvegardes manuelles
+promo/
+backup_*/

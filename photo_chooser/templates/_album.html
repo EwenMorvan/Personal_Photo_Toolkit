@@ -1,0 +1,243 @@
+<!-- Album module: photo-book maker -->
+<div id="app-album" class="app">
+
+  <!-- ── all albums ── -->
+  <section id="al-home" class="al-view active">
+    <div class="home-wrap">
+      <div class="home-head">
+        <h1>Mes albums</h1>
+        <span class="badge" id="al-count"></span>
+        <button class="btn btn-primary" id="al-new" style="margin-left:auto">+ Nouvel album</button>
+      </div>
+      <div class="home-grid" id="al-grid"></div>
+      <div class="welcome-center" id="al-empty" style="display:none">
+        <div class="welcome-icon">📖</div>
+        <h1>Créez votre premier album</h1>
+        <p>Choisissez un projet PhotoChooser : la mise en page se fait toute seule à partir de vos photos likées, puis vous ajustez ce que vous voulez.</p>
+        <button class="btn btn-primary" id="al-new2">+ Nouvel album</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── editor ── -->
+  <section id="al-editor" class="al-view">
+    <header class="al-top">
+      <button class="btn btn-ghost" id="al-back" title="Tous les albums">←</button>
+      <input id="al-name" class="al-name" spellcheck="false" title="Nom de l'album"/>
+      <span class="al-save" id="al-save"></span>
+      <div class="al-top-actions">
+        <select id="al-format" class="filter-input" title="Format des pages"></select>
+        <button class="btn btn-ghost" id="al-undo" title="Annuler (Ctrl+Z)">↶</button>
+        <button class="btn btn-ghost" id="al-redo" title="Rétablir (Ctrl+Y)">↷</button>
+        <button class="btn btn-outline" id="al-regen" title="Refaire toute la mise en page automatiquement">✦ Refaire en automatique</button>
+        <button class="btn btn-outline" id="al-preview" title="Feuilleter l'album">▶ Aperçu</button>
+        <button class="btn btn-primary" id="al-export">⬇ Exporter / imprimer</button>
+      </div>
+    </header>
+
+    <div class="al-body">
+      <aside class="al-pages" id="al-pages"></aside>
+
+      <div class="al-center">
+        <div class="al-stage" id="al-stage"><div id="al-canvas"></div></div>
+        <div class="al-pagebar">
+          <div class="seg" id="al-view" title="Une page à la fois, ou le livre ouvert (deux pages côte à côte)">
+            <button data-v="single">▯ Page</button>
+            <button data-v="spread">▯▯ Livre</button>
+          </div>
+          <span class="sel-sep"></span>
+          <button class="btn btn-ghost" id="al-prev" title="Page précédente">‹</button>
+          <span id="al-pos">1 / 1</span>
+          <button class="btn btn-ghost" id="al-next" title="Page suivante">›</button>
+          <span class="sel-sep"></span>
+          <button class="btn btn-ghost" id="al-up" title="Déplacer la page vers le début">↑</button>
+          <button class="btn btn-ghost" id="al-down" title="Déplacer la page vers la fin">↓</button>
+          <div class="menu" id="al-add-menu">
+            <button class="btn btn-outline" id="al-add">+ Page</button>
+            <div class="menu-pop up">
+              <button data-add="photos">🖼 Page de photos</button>
+              <button data-add="chapter">📑 Page de chapitre</button>
+              <button data-add="text">✎ Page de texte</button>
+            </div>
+          </div>
+          <div class="menu" id="al-el-menu">
+            <button class="btn btn-outline" id="al-el-add">+ Élément</button>
+            <div class="menu-pop up">
+              <button data-el="frame">🖼 Cadre photo</button>
+              <button data-el="text">T Texte libre</button>
+              <button data-el="icon">★ Pictogramme / logo…</button>
+              <button data-el="image">◈ Image depuis un fichier…</button>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-toggle" id="al-safe" title="Afficher la zone de sécurité d'impression (10 mm) : gardez-y les textes et les logos">▢ Zone sûre</button>
+          <input type="file" id="al-file" accept="image/png,image/jpeg,image/webp,image/gif" hidden/>
+          <button class="btn btn-danger" id="al-del" title="Supprimer cette page (les photos restent disponibles)">🗑</button>
+        </div>
+      </div>
+
+      <aside class="al-side">
+        <div class="seg al-side-tabs" id="al-side-tabs">
+          <button data-v="page" class="active">Page</button>
+          <button data-v="style">Style</button>
+        </div>
+
+        <div class="al-side-body" data-tab="page">
+          <div class="al-panel" id="al-props" style="display:none"></div>
+          <div class="al-panel" id="al-layout-panel">
+            <div class="section-label">Photos seules</div>
+            <div class="al-layouts" id="al-layouts"></div>
+            <div class="section-label" style="margin-top:14px">Photos et texte</div>
+            <div class="al-layouts" id="al-layouts-text"></div>
+          </div>
+          <div class="al-panel">
+            <p class="al-hint">Cliquez sur un élément pour le sélectionner : poignées aux coins pour le redimensionner, pastille ✥ pour le déplacer. Dans une photo sélectionnée : glisser pour recadrer, molette pour zoomer. Double-clic sur un cadre : choisir une photo. En vue Livre, glissez une photo (ou son cadre par la pastille ✥) sur un cadre de l'autre page pour l'y déplacer.</p>
+          </div>
+        </div>
+
+        <div class="al-side-body" data-tab="style" style="display:none">
+          <div class="al-panel">
+            <div class="section-label">Thème de départ</div>
+            <div class="al-themes" id="al-themes"></div>
+          </div>
+          <div class="al-panel">
+            <div class="section-label">Personnaliser</div>
+            <div class="al-custom" id="al-custom"></div>
+            <button class="btn btn-ghost" id="al-style-reset">↺ Revenir au thème</button>
+          </div>
+          <div class="al-panel">
+            <div class="section-label">Arrière-plan</div>
+            <div id="al-bg"></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="al-tray">
+      <div class="al-tray-head">
+        <div class="seg" id="al-tray-seg">
+          <button data-v="unused" class="active">Pas encore placées</button>
+          <button data-v="liked">Toutes les likées</button>
+          <button data-v="all">Tout le projet</button>
+        </div>
+        <span class="al-hint" id="al-tray-info"></span>
+      </div>
+      <div class="al-tray-list" id="al-tray-list"></div>
+    </div>
+  </section>
+
+  <!-- ── new album / regenerate dialog ── -->
+  <div class="modal-overlay" id="al-dialog" style="display:none">
+    <div class="modal-box al-dialog">
+      <h2 id="al-dlg-title">Nouvel album</h2>
+      <div class="al-form" id="al-form">
+        <label>Projet<select id="al-f-project" class="filter-input"></select></label>
+        <label>Nom de l'album<input id="al-f-name" class="modal-input" autocomplete="off"/></label>
+        <label>Photos à utiliser
+          <select id="al-f-source" class="filter-input">
+            <option value="liked">Les photos likées (recommandé)</option>
+            <option value="all">Toutes les photos du projet</option>
+          </select></label>
+        <label>Remplissage des pages
+          <select id="al-f-density" class="filter-input">
+            <option value="airy">Aéré (1 à 2 photos par page)</option>
+            <option value="normal" selected>Équilibré (2 à 3 photos par page)</option>
+            <option value="dense">Dense (3 à 4 photos par page)</option>
+          </select></label>
+        <label>Format<select id="al-f-format" class="filter-input"></select></label>
+        <label>Thème<select id="al-f-theme" class="filter-input"></select></label>
+        <label class="checkbox-label al-check"><input type="checkbox" id="al-f-deep" checked/> Analyser le contenu des photos (mer, montagne, village…) pour les légendes — plus long la première fois</label>
+      </div>
+      <div class="al-progress" id="al-progress" style="display:none">
+        <p id="al-progress-text">Analyse des photos…</p>
+        <progress id="al-progress-bar" max="100" value="0"></progress>
+      </div>
+      <div class="modal-actions" id="al-dlg-actions">
+        <button class="btn btn-ghost" id="al-dlg-cancel">Annuler</button>
+        <button class="btn btn-primary" id="al-dlg-ok">✦ Créer automatiquement</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── photo picker ── -->
+  <div class="modal-overlay" id="al-picker" style="display:none">
+    <div class="modal-box al-picker">
+      <div class="al-picker-head">
+        <h2>Choisir une photo</h2>
+        <div class="seg" id="al-pick-seg">
+          <button data-v="unused" class="active">Pas encore placées</button>
+          <button data-v="liked">Toutes les likées</button>
+          <button data-v="all">Tout le projet</button>
+        </div>
+        <div class="seg" id="al-pick-size" title="Taille des vignettes">
+          <button data-v="150">Petites</button>
+          <button data-v="220" class="active">Moyennes</button>
+          <button data-v="320">Grandes</button>
+        </div>
+        <button class="btn btn-ghost" id="al-pick-close">✕</button>
+      </div>
+      <div class="al-picker-grid" id="al-pick-grid"></div>
+    </div>
+  </div>
+
+  <!-- ── pictograms / logos ── -->
+  <div class="modal-overlay" id="al-icons" style="display:none">
+    <div class="modal-box al-picker al-icons">
+      <div class="al-picker-head">
+        <h2>Pictogrammes et logos</h2>
+        <input type="search" id="al-ic-q" class="filter-input" placeholder="Rechercher en anglais : mountain, beach, camera…" autocomplete="off"/>
+        <div class="seg" id="al-ic-kind">
+          <button data-v="icons" class="active">Pictogrammes</button>
+          <button data-v="brands">Marques</button>
+        </div>
+        <input type="color" id="al-ic-color" value="#222222" title="Couleur"/>
+        <button class="btn btn-ghost" id="al-ic-close">✕</button>
+      </div>
+      <div class="al-ic-sugg" id="al-ic-sugg"></div>
+      <div class="al-ic-grid" id="al-ic-grid"></div>
+      <p class="al-hint">Bibliothèques libres (Material, Tabler, Phosphor…) via iconify.design : une connexion Internet est nécessaire et les mots recherchés sont envoyés à ce service. La couleur se change aussi après coup. Les logos de marques restent la propriété de leurs détenteurs.</p>
+    </div>
+  </div>
+
+  <!-- ── export / print ── -->
+  <div class="modal-overlay" id="al-export-dlg" style="display:none">
+    <div class="modal-box al-dialog al-export">
+      <h2>Exporter l'album</h2>
+      <div id="al-ex-form">
+        <div class="al-form">
+          <label>Type de livre (pour la vérification)
+            <select id="al-ex-book" class="filter-input"></select></label>
+        </div>
+        <div class="al-checks" id="al-ex-checks"></div>
+        <label class="checkbox-label al-check"><input type="checkbox" id="al-ex-fix" checked/> Corriger automatiquement dans le fichier (4ᵉ de couverture, pages blanches pour atteindre un nombre pair et le minimum)</label>
+        <div class="al-ex-actions">
+          <button class="btn btn-primary" id="al-ex-go">⬇ Créer les fichiers d'impression</button>
+          <button class="btn btn-outline" id="al-ex-quick" title="Passe par la fenêtre d'impression du navigateur">PDF rapide (aperçu)</button>
+        </div>
+        <details class="al-prodigi">
+          <summary>Commander l'impression (Prodigi ou autre)</summary>
+          <p>Le fichier créé respecte le format demandé par Prodigi pour les livres photo : un seul PDF, couverture en première page, 4ᵉ de couverture en dernière, pages à la taille exacte du livre, 300 dpi.</p>
+          <ol>
+            <li>Créez votre compte sur <b>dashboard.prodigi.com</b> : chaque personne commande et paie avec son propre compte.</li>
+            <li>Nouvelle commande manuelle → livre photo, au même format et type que ci-dessus.</li>
+            <li>Importez le PDF du dossier d'export, vérifiez l'aperçu, puis validez.</li>
+          </ol>
+          <p class="al-hint">L'envoi automatique par leur API n'est pas possible depuis une application installée sur votre ordinateur : Prodigi n'accepte les fichiers que sous forme d'adresse web publique.</p>
+        </details>
+      </div>
+      <div class="al-progress" id="al-ex-progress" style="display:none">
+        <p id="al-ex-text">Préparation…</p>
+        <progress id="al-ex-bar" max="100" value="0"></progress>
+      </div>
+      <div class="modal-actions"><button class="btn btn-ghost" id="al-ex-close">Fermer</button></div>
+    </div>
+  </div>
+
+  <!-- ── preview (flip through) ── -->
+  <div class="al-previewer" id="al-previewer" style="display:none">
+    <button class="lb-close" id="al-pv-close" title="Fermer (Échap)">✕</button>
+    <button class="lb-arrow lb-prev" id="al-pv-prev">&#8249;</button>
+    <button class="lb-arrow lb-next" id="al-pv-next">&#8250;</button>
+    <div class="al-pv-stage" id="al-pv-stage"></div>
+    <div class="al-pv-pos" id="al-pv-pos"></div>
+  </div>
+</div>

@@ -1,0 +1,41 @@
+<!-- Updates, data folder, import from the old version -->
+<div class="modal-overlay" id="up-dlg" style="display:none">
+  <div class="modal-box up-box">
+    <h2 id="up-title">Nouvelle version disponible</h2>
+    <p class="up-sub" id="up-sub"></p>
+    <div class="up-notes" id="up-notes"></div>
+    <div class="al-progress" id="up-progress" style="display:none">
+      <p id="up-step">Téléchargement…</p>
+      <progress id="up-bar" max="100" value="0"></progress>
+    </div>
+    <div class="modal-actions" id="up-actions">
+      <button class="btn btn-ghost" id="up-skip" title="Ne plus proposer cette version">Ignorer cette version</button>
+      <button class="btn btn-ghost" id="up-later">Plus tard</button>
+      <button class="btn btn-primary" id="up-go">⬇ Mettre à jour</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="set-dlg" style="display:none">
+  <div class="modal-box up-box">
+    <h2>Réglages</h2>
+    <div class="set-row">
+      <div><b>Version</b><span id="set-version"></span></div>
+      <button class="btn btn-outline" id="set-check">Rechercher une mise à jour</button>
+    </div>
+    <p class="al-hint" id="set-check-res"></p>
+    <div class="set-row">
+      <div><b>Dossier de vos projets</b><span id="set-data"></span></div>
+      <div class="set-btns">
+        <button class="btn btn-outline" id="set-open">📂 Ouvrir</button>
+        <button class="btn btn-outline" id="set-move" title="Choisir un autre dossier : les projets y sont copiés">Changer…</button>
+      </div>
+    </div>
+    <div class="set-row">
+      <div><b>Ancienne version</b><span>Récupérer les projets de Photo_chooser.exe (ils sont copiés, rien n'est effacé).</span></div>
+      <button class="btn btn-outline" id="set-import">Importer…</button>
+    </div>
+    <p class="al-hint" id="set-import-res"></p>
+    <div class="modal-actions"><button class="btn btn-primary" id="set-close">Fermer</button></div>
+  </div>
+</div>

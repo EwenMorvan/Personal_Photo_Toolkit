@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Photo Studio</title>
+  <link rel="icon" href="/static/favicon.ico" sizes="any">
+  <link rel="icon" href="/static/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/style.css"/>
+  <link rel="stylesheet" href="/static/css/editor.css"/>
+  <link rel="stylesheet" href="/static/css/album.css"/>
+  <link rel="stylesheet" href="/static/css/montage.css"/>
+  <link rel="stylesheet" href="/static/css/shell.css"/>
+</head>
+<body>
+
+<!-- ═══════════════ SHELL : one page, one tab per module ═══════════════ -->
+<header id="appbar">
+  <div class="ab-brand" data-app="hub" title="Accueil"><img class="ab-logo" src="/static/img/logo.svg" alt=""> Photo Studio</div>
+  <nav class="ab-tabs" id="ab-tabs">
+    <button data-app="hub">Accueil</button>
+    <button data-app="chooser">PhotoChooser</button>
+    <button data-app="album">Album</button>
+    <button data-app="montage">Montage</button>
+  </nav>
+  <button class="ab-set" id="ab-set" title="Version, mises à jour, dossier des projets">⚙ Réglages</button>
+  <button class="ab-quit" id="ab-quit" title="Arrêter l'application">⏻ Quitter</button>
+</header>
+
+{% include "_hub.html" %}
+{% include "_chooser.html" %}
+{% include "_album.html" %}
+{% include "_montage.html" %}
+{% include "_system.html" %}
+
+<!-- ═══════════════════════════ TOAST ══════════════════════════════ -->
+<div id="toast" class="toast" style="display:none"></div>
+
+<script src="/static/js/shell.js"></script>
+<script src="/static/js/grade-core.js"></script>
+<script src="/static/js/gl-renderer.js"></script>
+<script src="/static/js/scopes.js"></script>
+<script src="/static/js/panzoom.js"></script>
+<script src="/static/js/app.js"></script>
+<script src="/static/js/editor.js"></script>
+<script src="/static/js/album.js"></script>
+<script src="/static/js/montage.js"></script>
+<script src="/static/js/system.js"></script>
+</body>
+</html>
