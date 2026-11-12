@@ -1,7 +1,18 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
+}
+
+// Signature des versions publiées : le chemin du fichier de clé est donné dans local.properties
+// (signing.properties=C:/…/photo_finder_release.properties), jamais dans le dépôt.
+val localProps = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+}
+val signingProps: Properties? = localProps.getProperty("signing.properties")?.let { path ->
+    file(path).takeIf { it.exists() }?.let { f -> Properties().apply { f.inputStream().use { load(it) } } }
 }
 
 android {
@@ -16,10 +27,19 @@ android {
         versionName = "1.0"
     }
 
+    signingConfigs {
+        if (signingProps != null) create("release") {
+            storeFile = file(signingProps.getProperty("storeFile"))
+            storePassword = signingProps.getProperty("storePassword")
+            keyAlias = signingProps.getProperty("keyAlias")
+            keyPassword = signingProps.getProperty("keyPassword")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
         }
     }
     compileOptions {
