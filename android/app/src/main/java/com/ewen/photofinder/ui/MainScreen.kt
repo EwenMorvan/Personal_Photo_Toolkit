@@ -49,6 +49,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
@@ -319,6 +320,8 @@ private fun Header(
     val ctx = LocalContext.current
     val filters by vm.filters.collectAsStateWithLifecycle()
     var menu by remember { mutableStateOf(false) }
+    var about by remember { mutableStateOf(false) }
+    if (about) AboutDialog { about = false }
     val cs = MaterialTheme.colorScheme
 
     Column(modifier.fillMaxWidth().background(cs.background).statusBarsPadding().padding(bottom = 10.dp)) {
@@ -362,6 +365,7 @@ private fun Header(
                         DropdownMenuItem(text = { Text("Vignettes plus petites") }, onClick = { menu = false; vm.zoomGrid(1) })
                         HorizontalDivider()
                         DropdownMenuItem(text = { Text("Exporter la liste (CSV)") }, onClick = { menu = false; onCsv() })
+                        DropdownMenuItem(text = { Text("À propos et licences") }, onClick = { menu = false; about = true })
                     }
                 }
             }
@@ -692,4 +696,25 @@ fun RangeDialog(onDismiss: () -> Unit, onPick: (java.time.LocalDate?, java.time.
             title = { Text("Choisir une période", modifier = Modifier.padding(start = 24.dp, top = 16.dp)) },
         )
     }
+}
+
+/** Version, licence de l'app et licences des bibliothèques incluses (texte embarqué dans l'APK). */
+@Composable
+private fun AboutDialog(onDismiss: () -> Unit) {
+    val ctx = LocalContext.current
+    val version = remember {
+        runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull() ?: "?"
+    }
+    val text = remember { runCatching { ctx.assets.open("licenses.txt").bufferedReader().use { it.readText() } }.getOrDefault("") }
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Photo Finder $version") },
+        text = {
+            Text(
+                text, style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.verticalScroll(androidx.compose.foundation.rememberScrollState())
+            )
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Fermer") } },
+    )
 }

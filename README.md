@@ -32,3 +32,13 @@ gradlew.bat assembleDebug
 
 JDK 17+ (celui d'Android Studio convient). L'APK est produit dans
 `android/app/build/outputs/apk/debug/`.
+
+## Licence
+
+Code sous **PolyForm Noncommercial 1.0.0** (`LICENSE.md`) : utilisation, modification et partage
+autorisés **à des fins non commerciales uniquement**.
+
+Required Notice: Copyright (c) 2026 Ewen Morvan (https://github.com/EwenMorvan)
+
+Les bibliothèques, modèles et services tiers gardent leur propre licence : voir
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
